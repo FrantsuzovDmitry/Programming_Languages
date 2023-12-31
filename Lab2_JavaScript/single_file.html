@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Single file variant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+
+        label, input, button {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #passwordsContainer {
+            margin-top: 72px;
+        }
+
+        .clickable {
+            cursor: pointer;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        .clickable:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Password Generator</h1>
+        <form id="passwordForm">
+            <label for="length">Password Length:</label>
+            <input type="number" id="length" min="4" max="30" required value="10">
+            <br>
+            <label>
+                <input type="checkbox" id="useUppercase" checked> Use Uppercase Letters (ABC)
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="useLowercase" checked> Use Lowercase Letters (abc)
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="useNumbers" checked> Use Numbers (123)
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="useSpecialChars" checked> Use Special Characters (#$_%@!)
+            </label>
+            <br>
+            <label for="quantity">Number of Passwords:</label>
+            <input type="number" id="quantity" min="1" max="15" required value="5">
+            <br>
+            <button type="submit">Generate Passwords</button>
+        </form>
+    </div>
+    <div id="passwordsContainer"></div>
+
+    <script>
+        document.getElementById('passwordForm').addEventListener('submit', function (event) {
+            event.preventDefault();     // Чтобы страница не перезагружалась
+            const length = document.getElementById('length').value;
+            const useUppercase = document.getElementById('useUppercase').checked;
+            const useLowercase = document.getElementById('useLowercase').checked;
+            const useNumbers = document.getElementById('useNumbers').checked;
+            const useSpecialChars = document.getElementById('useSpecialChars').checked;
+            const quantity = document.getElementById('quantity').value;
+
+            let characters = '';
+            if (useUppercase) characters += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (useLowercase) characters += 'abcdefghijklmnopqrstuvwxyz';
+            if (useNumbers) characters += '1234567890';
+            if (useSpecialChars) characters += '!@#$%&*()_+=-';
+
+            let passwords = generatePasswords(length, characters, quantity);
+            displayPasswords(passwords);
+        });
+
+        function generatePasswords(length, characters, quantity) {
+            let generatedPasswords = [];
+            for (let i = 0; i < quantity; i++) {
+                let password = '';
+                for (let j = 0; j < length; j++) {
+                    let randomIndex = Math.floor(Math.random() * characters.length);
+                    password += characters.charAt(randomIndex);
+                }
+                generatedPasswords.push(password);
+            }
+            return generatedPasswords;
+        }
+
+        function displayPasswords(passwords) {
+            let passwordsContainer = document.getElementById('passwordsContainer');
+            passwordsContainer.innerHTML = '';
+            passwords.forEach((password, index) => {
+                let passwordElement = document.createElement('div');
+                passwordElement.textContent = password;
+                passwordElement.classList.add('clickable');
+                passwordElement.addEventListener('click', () => {
+                    copyToClipboard(password);
+                    alert(`Password ${index + 1} copied to clipboard`);
+                });
+                passwordsContainer.appendChild(passwordElement);
+            });
+        }
+
+        function copyToClipboard(text) {
+            let textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);    // Чтобы можно было скопировать этот элемент
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+
+</html>
