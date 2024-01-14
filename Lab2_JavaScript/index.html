@@ -136,7 +136,7 @@
                 passwordElement.classList.add('clickable');
                 passwordElement.addEventListener('click', () => {
                     copyToClipboard(password);
-                    alert(`Password ${index + 1} copied to clipboard`);
+                    savePassToServer(password)
                 });
                 passwordsContainer.appendChild(passwordElement);
             });
@@ -149,6 +149,20 @@
             textarea.select();
             document.execCommand('copy');
             document.body.removeChild(textarea);
+        }
+
+        function savePassToServer(password) {
+            fetch('/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
         }
     </script>
 </body>
